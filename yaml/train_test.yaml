@@ -1,0 +1,80 @@
+
+DataProClass: DataProLog
+#DataProClass: DataProMedian
+#DataProClass: DataPro
+Framework: Seq2Seq
+
+command: run_train
+
+kf: 0
+epochs: 1000
+
+save_freq: 1
+load_len: &load_len 1000
+#load_len: &load_len -1
+hidden_size: &hidden_size 60
+batch_size: &batch_size 12
+rnn_layers: &rnn_layers 1
+rnn_dropout: &rnn_dropout 0.5
+bidirectional: &bidirectional True
+n_features: &n_features 5
+
+DataPro:
+  #raw_data_file: ../input/train_1.csv
+  raw_data_file: ../input/train_2.csv
+  load_len: *load_len
+  batch_size: *batch_size
+  k_fold: 4
+  col_start: 430
+  target_type: 1
+  n_features: *n_features
+  #random_state: 9527
+  shuffle_seed: ~
+
+encoder: &encoder
+  #type: simple
+  type: pa3
+  input_size: *n_features
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  activation_rate: 0.2
+  optimizer: {type: Adam, l2_scale: 0.001, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+decoder: &decoder
+  type: simple
+  output_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  optimizer: {type: Adam, l2_scale: 0.001, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+  #optimizer: {type: SGD, l2_scale: 0.01, momentum: 0.9, dampening: 0, nesterov: True}
+
+
+Model:
+  enc_file: ~
+  #enc_file: wtf_2017-09-03_01-08-46-365749_ae1_enc.pth
+  #enc_freeze_span: [0, 1]
+
+  dec_file: ~
+  #dec_file: wtf_2017-08-31_09-26-15-817563_kf0_1_dec.pth
+
+  loss_fn: SMAPE
+  encoder: *encoder
+  decoder: *decoder
+
+  teacher_forcing_ratio: 0.5
+  keep_hidden: False
+  clip: 5.0
+  lr: 0.001
+  train_batch_per_epoch: 20
+  #train_batch_per_epoch: 3000
+  validate_batch_per_epoch: 30
+
+
+
+
+
+

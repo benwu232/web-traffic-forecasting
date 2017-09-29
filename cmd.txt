@@ -1,0 +1,11 @@
+
+#train
+python wtf.py -m train --epochs 100
+
+
+
+
+
+
+#predict
+python wtf.py -m predict --model-file 2017-08-16_00-31-10-036995_wtf_10.pth --seq-len 550

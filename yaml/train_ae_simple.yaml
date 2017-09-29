@@ -1,0 +1,68 @@
+
+Framework: AutoEncoder
+
+command: run_train
+
+kf: 0
+epochs: 1000
+
+save_freq: 1
+#load_len: &load_len 3000
+load_len: &load_len -1
+hidden_size: &hidden_size 100
+batch_size: &batch_size 128
+rnn_layers: &rnn_layers 2
+rnn_dropout: &rnn_dropout 0.5
+bidirectional: &bidirectional True
+
+DataPro:
+  raw_data_file: ../input/train_1.csv
+  load_len: *load_len
+  batch_size: *batch_size
+  k_fold: 1
+  col_start: 430
+  col_end: 550
+  target_type: 0
+
+encoder: &encoder
+  type: simple
+  #type: pa5
+  input_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  activation_rate: 0.2
+  optimizer: {type: Adam, l2_scale: 0.0, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+decoder: &decoder
+  type: simple
+  output_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  optimizer: {type: Adam, l2_scale: 0.0, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+
+Model:
+  #model_files: ~
+  model_files: [wtf_2017-09-03_01-08-46-365749_ae1_enc.pth, wtf_2017-09-03_01-08-46-365749_ae1_dec.pth]
+
+  loss_fn: SMAPE
+  encoder: *encoder
+  decoder: *decoder
+  l1weight: 0.001
+
+  teacher_forcing_ratio: 0.10
+  clip: 5.0
+  lr: 0.001
+  #train_batch_per_epoch: 50
+  train_batch_per_epoch: 500
+  validate_batch_per_epoch: 30
+
+
+
+
+
+

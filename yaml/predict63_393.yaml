@@ -1,0 +1,89 @@
+
+#DataProClass: DataProMedian
+DataProClass: DataProLog
+Framework: Seq2Seq
+
+command: run_predict
+
+# for prediction
+predict_seq_len: 63
+
+kf: 0
+epochs: 1000
+
+save_freq: 1
+#load_len: &load_len 1000
+load_len: &load_len -1
+hidden_size: &hidden_size 60
+batch_size: &batch_size 128
+rnn_layers: &rnn_layers 1
+rnn_dropout: &rnn_dropout 0.3
+bidirectional: &bidirectional True
+n_features: &n_features 5
+
+DataPro:
+  #raw_data_file: ../input/train_1.csv
+  raw_data_file: ../input/train_2.csv
+  load_len: *load_len
+  batch_size: *batch_size
+  k_fold: 20
+  col_start: 430
+  target_type: 1
+  n_features: *n_features
+  #random_state: 9527
+  shuffle_seed: ~
+
+encoder: &encoder
+  #type: simple
+  type: pa2
+  input_size: *n_features
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  activation_rate: 0.2
+  optimizer: {type: Adam, l2_scale: 0.0, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+decoder: &decoder
+  type: simple
+  output_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  activation_rate: 0.2
+  optimizer: {type: Adam, l2_scale: 0.001, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+  #optimizer: {type: SGD, l2_scale: 0.01, momentum: 0.9, dampening: 0, nesterov: True}
+
+
+Model:
+  #model_files: None
+  #model_files: [wtf_2017-09-01_11-37-45-901601_kf0_11_enc.pth, wtf_2017-09-01_11-37-45-901601_kf0_11_dec.pth]
+  #enc_file: wtf_2017-09-05_15-47-06-015307_kf0_2_enc.pth
+  #dec_file: wtf_2017-09-05_15-47-06-015307_kf0_2_dec.pth
+  #enc_file: wtf_2017-09-05_18-59-53-215685_kf0_6_enc.pth
+  #dec_file: wtf_2017-09-05_18-59-53-215685_kf0_6_dec.pth
+  #enc_file: wtf_2017-09-09_00-04-54-934866_kf0_6_enc.pth
+  #dec_file: wtf_2017-09-09_00-04-54-934866_kf0_6_dec.pth
+
+  enc_file: wtf_2017-09-12_10-50-23-381944_kf0_12_enc.pth
+  dec_file: wtf_2017-09-12_10-50-23-381944_kf0_12_dec.pth
+
+  loss_fn: SMAPE
+  encoder: *encoder
+  decoder: *decoder
+
+  teacher_forcing_ratio: 0.5
+  keep_hidden: False
+  clip: 5.0
+  lr: 0.001
+  batch_size: *batch_size
+  #train_batch_per_epoch: 10000
+  train_batch_per_epoch: 3000
+  validate_batch_per_epoch: 500
+
+
+
+
+
+

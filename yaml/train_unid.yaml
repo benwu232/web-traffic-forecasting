@@ -1,0 +1,64 @@
+
+Framework: Seq2Seq
+
+command: run_train
+
+kf: 0
+epochs: 1000
+
+save_freq: 1
+#load_len: &load_len 1000
+load_len: &load_len -1
+hidden_size: &hidden_size 200
+batch_size: &batch_size 128
+rnn_layers: &rnn_layers 1
+rnn_dropout: &rnn_dropout 0.3
+bidirectional: &bidirectional False
+
+DataPro:
+  raw_data_file: ../input/train_1.csv
+  load_len: *load_len
+  batch_size: *batch_size
+  k_fold: 4
+  col_start: 430
+  col_end: 490
+
+encoder: &encoder
+  type: simple
+  input_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  optimizer: {type: Adam, l2_scale: 0.0, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+decoder: &decoder
+  type: simple
+  output_size: 1
+  hidden_size: *hidden_size
+  n_layers: *rnn_layers
+  dropout: *rnn_dropout
+  bidirectional: *bidirectional
+  optimizer: {type: Adam, l2_scale: 0.0, beta1: 0.9, beta2: 0.99, epsilon: 0.00000001}
+
+
+Model:
+  model_files: ~
+  #model_files: [wtf_2017-08-31_09-26-15-817563_kf0_1_enc.pth, wtf_2017-08-31_09-26-15-817563_kf0_1_dec.pth]
+
+  loss_fn: SMAPE
+  encoder: *encoder
+  decoder: *decoder
+
+  teacher_forcing_ratio: 0.5
+  clip: 5.0
+  lr: 0.001
+  train_batch_per_epoch: 5000
+  #train_batch_per_epoch: 3000
+  validate_batch_per_epoch: 300
+
+
+
+
+
+
